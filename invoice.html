@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tax Invoice | ST LASERS</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(124, 58, 237, 0.42), transparent 22%),
+                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.32), transparent 20%),
+                #050816;
+            padding: 24px;
+            margin: 0;
+        }
+
+        #invoice-container {
+            width: 210mm;
+            margin: auto;
+        }
+
+        .invoice-box {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 8mm;
+            background: #fff !important;
+            border: 1px solid #000;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            color: #000 !important;
+        }
+
+        .controls {
+            width: 210mm;
+            margin: 0 auto 14px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 18px;
+            border: none;
+            cursor: pointer;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            box-shadow: 0 8px 24px rgba(2, 6, 23, 0.15);
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, rgba(51, 65, 85, 0.92), rgba(30, 41, 59, 0.78));
+            color: white;
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            color: white;
+        }
+
+        .btn-download {
+            background: #050816;
+            color: #93c5fd;
+            border: 1px solid rgba(59, 130, 246, 0.45);
+        }
+
+        .header-table, .main-table { width: 100%; border-collapse: collapse; }
+        .header-table td, .main-table th, .main-table td { border: 1px solid black; padding: 6px; vertical-align: top; font-size: 12px; }
+        .center { text-align: center; }
+        .bold { font-weight: bold; }
+
+        .items-area { flex-grow: 1; border: 1px solid black; border-top: none; }
+        .main-table { border: none; }
+        .main-table th { border-bottom: 1px solid black; background: #f9f9f9; }
+        .main-table td { border: none; border-right: 1px solid black; height: 25px; }
+        .main-table td:last-child { border-right: none; }
+
+        .total-section { display: flex; border: 1px solid black; border-top: none; }
+        .words-and-bank { width: 60%; border-right: 1px solid black; padding: 8px; font-size: 11px; }
+        .math-box { width: 40%; }
+        .math-table { width: 100%; border-collapse: collapse; }
+        .math-table td { border: 1px solid black; border-top: none; border-right: none; padding: 4px 8px; font-size: 12px; }
+
+        .bottom-section { display: flex; border: 1px solid black; border-top: none; height: 100px; }
+        .declaration-box { width: 60%; border-right: 1px solid black; padding: 8px; font-size: 10px; }
+        .sig-box { width: 40%; text-align: center; padding: 8px; display: flex; flex-direction: column; justify-content: space-between; font-size: 12px; }
+
+        @media print { .controls { display: none; } body { background: white; padding: 0; } }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <a href="javascript:history.back()" class="btn btn-back">← BACK</a>
+    <div>
+        <button class="btn btn-print" onclick="window.print()">PRINT</button>
+        <button class="btn btn-download" onclick="downloadPDF()">DOWNLOAD PDF</button>
+    </div>
+</div>
+
+<div id="invoice-container">
+    <div class="invoice-box" id="invoice-content">
+        <div class="center bold" style="font-size: 14px; text-decoration: underline; margin-bottom: 5px;">TAX INVOICE</div>
+        <div style="text-align: right; font-size: 10px; margin-bottom: 2px;">Original Copy</div>
+
+        <table class="header-table">
+            <tr>
+                <td width="60%">
+                    <span class="bold" style="font-size: 18px;">ST LASERS</span><br>
+                    <span style="font-size: 10px;">(Laser Applique Cutting with Camera)</span><br>
+                    17/1A, RVE Layout, 1st Street, Thennampalayam, Tirupur - 641604<br>
+                    Email: stlasertirupur@gmail.com | Contact: 6374566574<br>
+                    <span class="bold">GSTIN No : 33AFHFS9990K1Z6</span>
+                </td>
+                <td width="40%" style="padding: 0;">
+                    <table style="width: 100%; height: 100%; border-collapse: collapse;">
+                        <tr><td style="border:none; border-bottom: 1px solid black; border-right: 1px solid black;">Invoice No:<br><span class="bold" id="v-invNo"></span></td><td style="border:none; border-bottom: 1px solid black;">Date:<br><span class="bold" id="v-date"></span></td></tr>
+                        <tr><td colspan="2" style="border:none;">Vehicle Number:<br><span class="bold" id="v-vehicle"></span></td></tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span class="bold">Billed To:</span><br>
+                    <div id="v-customer" class="bold" style="font-size: 13px;"></div>
+                    <div id="v-address" style="margin-top:2px;"></div>
+                    <span class="bold">GSTIN : <span id="v-gst"></span></span>
+                </td>
+            </tr>
+        </table>
+
+        <div class="items-area">
+            <table class="main-table">
+                <thead>
+                    <tr>
+                        <th width="8%">S.No</th>
+                        <th width="52%">Particulars</th>
+                        <th width="12%">HSN Code</th>
+                        <th width="10%">Qty(Nos)</th>
+                        <th width="8%">Rate</th>
+                        <th width="10%">Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="v-items"></tbody>
+            </table>
+        </div>
+
+        <div class="total-section">
+            <div class="words-and-bank">
+                <span class="bold">Amount(in words):</span><br>
+                INR <span id="v-words" style="text-transform: capitalize;"></span> Only
+                <div style="margin-top: 15px; font-size: 10px;">
+                    <span class="bold" style="text-decoration: underline;">Our Bank Details:</span><br>
+                    Bank: KOTAK MAHINDRA, THENNAMPALAYAM, TIRUPUR<br>
+                    A/C No : 6349233178 | IFSC Code : KKBK0008785
+                </div>
+            </div>
+            <div class="math-box">
+                <table class="math-table">
+                    <tr><td width="60%" align="right">Gross Total</td><td width="40%" align="right" id="v-gross"></td></tr>
+                    <tr><td align="right">CGST 2.5%</td><td align="right" id="v-cgst"></td></tr>
+                    <tr><td align="right">SGST 2.5%</td><td align="right" id="v-sgst"></td></tr>
+                    <tr class="bold"><td align="right">Total Amount</td><td align="right" id="v-total"></td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="bottom-section">
+            <div class="declaration-box">
+                <span class="bold" style="text-decoration: underline;">Declaration :</span><br>
+                We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.
+            </div>
+            <div class="sig-box">
+                <div>For <span class="bold">ST LASERS</span></div>
+                <div class="bold">Authorised Signatory</div>
+            </div>
+        </div>
+        <div class="center" style="font-size: 9px; margin-top: 5px;">Subject to Tirupur Jurisdiction Only</div>
+    </div>
+</div>
+
+<script>
+    function numberToWords(num) {
+        const a = ['', 'one ', 'two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 'fifteen ', 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen '];
+        const b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+        const n = ('0000000' + Math.floor(num)).slice(-7).match(/^(\d{2})(\d{2})(\d{2})(\d{1})$/);
+        if (!n) return '';
+        let str = '';
+        str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'lakh ' : '';
+        str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'thousand ' : '';
+        str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'hundred ' : '';
+        str += (n[4] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) : '';
+        return str;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const source = urlParams.get('source');
+    const viewIndex = urlParams.get('index');
+    let bill;
+
+    // Logic to pick data from Cloud (Session) or Local Storage
+    if (source === 'cloud') {
+        bill = JSON.parse(sessionStorage.getItem("viewInvoiceData"));
+    } else {
+        const data = JSON.parse(localStorage.getItem("st_lasers_data")) || [];
+        bill = (viewIndex !== null) ? data[viewIndex] : data[data.length - 1];
+    }
+
+    if (bill) {
+        document.getElementById("v-invNo").innerText = bill.invNo;
+        document.getElementById("v-date").innerText = bill.date;
+        document.getElementById("v-customer").innerText = bill.customer;
+        document.getElementById("v-address").innerText = bill.address;
+        document.getElementById("v-gst").innerText = bill.customerGst;
+        document.getElementById("v-vehicle").innerText = bill.vehicle || '---';
+
+        let rows = "";
+        bill.items.forEach((item, i) => {
+            rows += `<tr><td align="center">${i+1}</td><td>${item.desc}</td><td align="center">${item.hsn}</td><td align="center">${item.qty}</td><td align="center">${item.rate}</td><td align="right">${item.total}</td></tr>`;
+        });
+        for(let i=bill.items.length; i<15; i++) {
+            rows += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>`;
+        }
+        document.getElementById("v-items").innerHTML = rows;
+        document.getElementById("v-gross").innerText = bill.gross;
+        document.getElementById("v-cgst").innerText = bill.cgst;
+        document.getElementById("v-sgst").innerText = bill.sgst;
+        document.getElementById("v-total").innerText = bill.grandTotal;
+        document.getElementById("v-words").innerText = numberToWords(Math.round(bill.grandTotal));
+    }
+
+    function downloadPDF() {
+        const element = document.getElementById('invoice-content');
+        const opt = {
+            margin: 0,
+            filename: 'ST_Laser_Inv_' + (bill ? bill.invNo : 'Doc') + '.pdf',
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 3, useCORS: true, backgroundColor: '#ffffff' },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().from(element).set(opt).save();
+    }
+</script>
+</body>
+</html>

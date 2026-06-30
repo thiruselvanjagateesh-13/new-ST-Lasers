@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Laser Billing System | ST Lasers</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg: #050816;
+            --panel: rgba(17, 24, 39, 0.55);
+            --panel-2: rgba(30, 41, 59, 0.42);
+            --border: linear-gradient(135deg, rgba(124, 58, 237, 0.65), rgba(59, 130, 246, 0.45));
+            --cyan: #8b5cf6;
+            --blue: #60a5fa;
+            --white: #ffffff;
+            --muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background:
+                linear-gradient(180deg, rgba(5, 8, 22, 0.55), rgba(5, 8, 22, 0.72)),
+                url('images/file_000000001438720b8817822f2ec4399b.png') center/cover no-repeat;
+            font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            width: 360px;
+            height: 360px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.55), transparent 65%);
+            filter: blur(20px);
+            z-index: 0;
+            pointer-events: none;
+            animation: floatGlow 10s ease-in-out infinite;
+        }
+
+        body::before { top: 8%; left: -8%; }
+        body::after {
+            bottom: -8%; right: -8%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.42), transparent 60%);
+            animation-delay: 3s;
+        }
+
+        @keyframes floatGlow {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.04); }
+        }
+
+        .navbar {
+            width: min(1120px, calc(100% - 48px));
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            padding: 16px 0;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(10, 17, 30, 0.55));
+            border: 1px solid rgba(124, 58, 237, 0.18);
+            backdrop-filter: blur(20px);
+            border-radius: 18px;
+            position: fixed;
+            top: 24px;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.45);
+        }
+
+        .navbar a {
+            color: #dbeafe;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.2px;
+        }
+
+        .navbar a:hover {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.9), rgba(59, 130, 246, 0.7));
+            color: white;
+            box-shadow: 0 0 25px rgba(124, 58, 237, 0.45);
+            transform: translateY(-2px);
+        }
+
+        .laser-bg {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-size: 150px;
+            font-weight: 900;
+            color: rgba(124, 58, 237, 0.08);
+            transform: rotate(-25deg);
+            user-select: none;
+            z-index: 1;
+            animation: glowPulse 5s ease-in-out infinite;
+            letter-spacing: 8px;
+        }
+
+        @keyframes glowPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.62), rgba(15, 23, 42, 0.4));
+            backdrop-filter: blur(24px);
+            padding: 70px 60px;
+            border-radius: 32px;
+            text-align: center;
+            border: 1px solid transparent;
+            background-clip: padding-box;
+            box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.24), 0 20px 70px rgba(59, 130, 246, 0.18);
+            margin-top: 170px;
+            width: min(620px, calc(100vw - 80px));
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            border-radius: 32px;
+            background: var(--border);
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .logo-badge {
+            width: 76px;
+            height: 76px;
+            margin: 0 auto 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            font-weight: 800;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            box-shadow: 0 0 26px rgba(124, 58, 237, 0.38);
+        }
+
+        h1 {
+            font-size: 58px;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: 1px;
+            text-shadow: 0 0 18px rgba(124, 58, 237, 0.25);
+        }
+
+        .subtitle {
+            margin-top: 14px;
+            color: #94a3b8;
+            font-size: 16px;
+            max-width: 340px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-group {
+            display:flex;
+            justify-content:center;
+            gap:18px;
+            flex-wrap:wrap;
+            margin-top:28px;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            padding: 16px 32px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.2px;
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #7c3aed, #3b82f6);
+            border: 1px solid transparent;
+            color: white;
+            box-shadow: 0 12px 34px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(124, 58, 237, 0.45);
+            color: #e9d5ff;
+            box-shadow: none;
+        }
+
+        .btn-primary:hover,
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 28px rgba(124, 58, 237, 0.35);
+        }
+
+        .feature-strip {
+            margin-top: 34px;
+            display:flex;
+            justify-content:center;
+            flex-wrap:wrap;
+            gap:14px;
+        }
+
+        .feature-pill {
+            padding: 10px 16px;
+            background: rgba(15, 23, 42, 0.35);
+            border: 1px solid rgba(124, 58, 237, 0.12);
+            border-radius: 14px;
+            color: #cbd5e1;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a href="companydetails.html">Clients</a>
+        <a href="billing.html">Billing</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="history.html">History</a>
+    </div>
+
+    <div class="laser-bg" style="top:20%">LASER</div>
+    <div class="laser-bg" style="top:50%">BILLING</div>
+
+    <div class="container">
+        <div class="logo-badge">S</div>
+        <h1>ST LASERS</h1>
+        <div class="subtitle">Premium Fabric Cutting Systems • Modern billing </div>
+        <div class="cta-group">
+            <button class="btn-primary" onclick="location.href='login.html'">Login</button>
+            <button class="btn-secondary" onclick="location.href='register.html'">Register</button>
+        </div>
+        <div class="feature-strip">
+            <span class="feature-pill">Invoice Billing</span>
+            <span class="feature-pill">Client Directory</span>
+            <span class="feature-pill">Smart Reports</span>
+        </div>
+    </div>
+</body>
+</html>

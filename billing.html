@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tax Invoice Entry | ST Lasers</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="firebase.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg: #050816;
+            --card: linear-gradient(180deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.46));
+            --input: linear-gradient(180deg, rgba(15, 23, 42, 0.58), rgba(15, 23, 42, 0.42));
+            --accent: #8b5cf6;
+            --accent-2: #3b82f6;
+            --muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at top left, rgba(124, 58, 237, 0.48), transparent 26%),
+                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.30), transparent 22%),
+                #050816;
+            font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 120px;
+            padding-bottom: 50px;
+        }
+
+        .navbar {
+            width: min(1120px, calc(100% - 48px));
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            padding: 16px 0;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(10, 17, 30, 0.56));
+            border: 1px solid rgba(124, 58, 237, 0.18);
+            backdrop-filter: blur(24px);
+            border-radius: 20px;
+            position: fixed;
+            top: 24px;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.42);
+        }
+
+        .navbar a {
+            color: #dbeafe;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .navbar a:hover {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.92), rgba(59, 130, 246, 0.72));
+            box-shadow: 0 0 25px rgba(124, 58, 237, 0.45);
+        }
+
+        .nav-back { position: absolute; left: 20px; font-size: 14px !important; border: 1px solid rgba(124, 58, 237, 0.25); }
+
+        .billing-card {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.48));
+            padding: 34px;
+            border-radius: 24px;
+            width: min(980px, calc(100vw - 80px));
+            border: 1px solid transparent;
+            position: relative;
+            box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.22), 0 16px 60px rgba(59, 130, 246, 0.16);
+            backdrop-filter: blur(24px);
+        }
+
+        .billing-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.56), rgba(59, 130, 246, 0.32));
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 28px; }
+        .full { grid-column: span 2; }
+        label { display: block; font-size: 11px; color: #a78bfa; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.16em; }
+        input, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.58), rgba(15, 23, 42, 0.42));
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            color: white;
+            border-radius: 14px;
+            box-sizing: border-box;
+            outline: none;
+            backdrop-filter: blur(14px);
+        }
+
+        input:focus, textarea:focus {
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin-top: 10px;
+        }
+
+        th {
+            text-align: left;
+            color: #a78bfa;
+            font-size: 12px;
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        td {
+            padding: 8px;
+        }
+
+        .p-input {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.4));
+            border: 1px solid rgba(148, 163, 184, 0.13);
+            padding: 10px;
+            color: white;
+            width: 100%;
+            border-radius: 12px;
+        }
+
+        .calc-section { margin-top: 24px; float: right; width: 320px; }
+        .calc-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+            color: #e2e8f0;
+        }
+        .total-row {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 18px;
+            border-top: 2px solid rgba(124, 58, 237, 0.55);
+            margin-top: 10px;
+            padding-top: 12px;
+        }
+
+        .btn-add {
+            background: transparent;
+            color: #93c5fd;
+            border: 1px solid rgba(59, 130, 246, 0.45);
+            padding: 10px 16px;
+            border-radius: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 30px;
+            font-size: 16px;
+            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.25);
+        }
+
+        .btn-save:hover,
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(124, 58, 237, 0.24);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="javascript:history.back()" class="nav-back">← BACK</a>
+        <a href="index.html">Home</a>
+        <a href="companydetails.html">Clients</a>
+        <a href="billing.html">Billing</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="history.html">History</a>
+    </nav>
+
+    <div class="billing-card">
+        <h2 style="color:var(--cyan); text-align:center; margin-top:0;">TAX INVOICE ENTRY</h2>
+        
+        <div class="grid">
+            <div><label>Invoice No</label><input type="text" id="invNo" placeholder="e.g. 127"></div>
+            <div><label>Date</label><input type="date" id="invDate"></div>
+            <div class="full"><label>Vehicle Number</label><input type="text" id="vehicle" placeholder="TN-XX-XXXX"></div>
+        </div>
+
+        <h3>Billed To</h3>
+        <div class="grid">
+            <div class="full"><label>Company Name</label><input type="text" id="customer"></div>
+            <div class="full"><label>Address</label><textarea id="address" rows="2"></textarea></div>
+            <div class="full"><label>GSTIN</label><input type="text" id="customerGst"></div>
+        </div>
+
+        <h3>Particulars</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th width="50%">Description</th>
+                    <th width="15%">HSN Code</th>
+                    <th width="10%">Qty</th>
+                    <th width="10%">Rate</th>
+                    <th width="15%">Amount</th>
+                </tr>
+            </thead>
+            <tbody id="itemBody">
+                <tr>
+                    <td><input type="text" class="p-desc p-input"></td>
+                    <td><input type="text" class="p-hsn p-input" value="998822"></td>
+                    <td><input type="number" class="p-qty p-input" oninput="calculate()"></td>
+                    <td><input type="number" class="p-rate p-input" oninput="calculate()"></td>
+                    <td><input type="text" class="p-amt p-input" readonly value="0.00"></td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn-add" onclick="addRow()">+ Add Particular</button>
+
+        <div style="overflow: hidden;">
+            <div class="calc-section">
+                <div class="calc-row"><span>Gross Total</span><span id="gross">0.00</span></div>
+                <div class="calc-row"><span>CGST (2.5%)</span><span id="cgst">0.00</span></div>
+                <div class="calc-row"><span>SGST (2.5%)</span><span id="sgst">0.00</span></div>
+                <div class="calc-row total-row"><span>Total Amount</span><span id="grandTotal">0.00</span></div>
+            </div>
+        </div>
+
+        <button class="btn-save" id="saveBtn" onclick="saveInvoice()">GENERATE & SAVE INVOICE</button>
+    </div>
+
+    <script>
+        // Firebase is initialized in firebase.js (window._firebase)
+
+        window.onload = function() {
+            document.getElementById('invDate').valueAsDate = new Date();
+            const selected = JSON.parse(sessionStorage.getItem("selectedClient"));
+            if(selected) {
+                document.getElementById("customer").value = selected.name;
+                document.getElementById("customerGst").value = selected.gst;
+                document.getElementById("address").value = selected.addr;
+                sessionStorage.removeItem("selectedClient");
+            }
+        };
+
+        function addRow() {
+            const tbody = document.getElementById("itemBody");
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td><input type="text" class="p-desc p-input"></td>
+                <td><input type="text" class="p-hsn p-input" value="998822"></td>
+                <td><input type="number" class="p-qty p-input" oninput="calculate()"></td>
+                <td><input type="number" class="p-rate p-input" oninput="calculate()"></td>
+                <td><input type="text" class="p-amt p-input" readonly value="0.00"></td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function calculate() {
+            let gross = 0;
+            document.querySelectorAll("#itemBody tr").forEach(row => {
+                const qty = row.querySelector(".p-qty").value || 0;
+                const rate = row.querySelector(".p-rate").value || 0;
+                const amt = qty * rate;
+                row.querySelector(".p-amt").value = amt.toFixed(2);
+                gross += amt;
+            });
+            const tax = gross * 0.025;
+            document.getElementById("gross").innerText = gross.toFixed(2);
+            document.getElementById("cgst").innerText = tax.toFixed(2);
+            document.getElementById("sgst").innerText = tax.toFixed(2);
+            document.getElementById("grandTotal").innerText = (gross + tax + tax).toFixed(2);
+        }
+
+        // 3. Updated Save Function (Now sends to Cloud)
+        async function saveInvoice() {
+            const btn = document.getElementById("saveBtn");
+            btn.innerText = "SAVING TO CLOUD...";
+            btn.disabled = true;
+
+            let items = [];
+            document.querySelectorAll("#itemBody tr").forEach(row => {
+                items.push({
+                    desc: row.querySelector(".p-desc").value,
+                    hsn: row.querySelector(".p-hsn").value,
+                    qty: row.querySelector(".p-qty").value,
+                    rate: row.querySelector(".p-rate").value,
+                    total: row.querySelector(".p-amt").value
+                });
+            });
+
+            const bill = {
+                invNo: document.getElementById("invNo").value,
+                date: document.getElementById("invDate").value,
+                vehicle: document.getElementById("vehicle").value,
+                customer: document.getElementById("customer").value,
+                address: document.getElementById("address").value,
+                customerGst: document.getElementById("customerGst").value,
+                items: items,
+                gross: document.getElementById("gross").innerText,
+                cgst: document.getElementById("cgst").innerText,
+                sgst: document.getElementById("sgst").innerText,
+                grandTotal: document.getElementById("grandTotal").innerText
+            };
+
+            try {
+                // Save to Firestore via firebase helper
+                await window._firebase.addInvoice(bill);
+
+                // Also save to LocalStorage as a backup
+                let history = JSON.parse(localStorage.getItem("st_lasers_data")) || [];
+                history.push(bill);
+                localStorage.setItem("st_lasers_data", JSON.stringify(history));
+
+                window.location.href = "invoice.html";
+            } catch (err) {
+                alert("Cloud Save Failed: " + err.message);
+                btn.innerText = "GENERATE & SAVE INVOICE";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

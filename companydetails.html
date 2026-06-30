@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Directory | ST Lasers</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg: #050816;
+            --panel: rgba(15, 23, 42, 0.58);
+            --panel-alt: rgba(30, 41, 59, 0.36);
+            --border: rgba(124, 58, 237, 0.35);
+            --cyan: #8b5cf6;
+            --blue: #60a5fa;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at top left, rgba(124, 58, 237, 0.45), transparent 26%),
+                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.3), transparent 24%),
+                #050816;
+            font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 120px;
+            min-height: 100vh;
+        }
+
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            filter: blur(24px);
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        body::before {
+            top: 12%; left: -6%;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.7), transparent 65%);
+        }
+
+        body::after {
+            bottom: 10%; right: -6%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.6), transparent 65%);
+        }
+
+        .navbar {
+            width: min(1120px, calc(100% - 48px));
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            padding: 16px 0;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(10, 17, 30, 0.55));
+            border: 1px solid rgba(124, 58, 237, 0.16);
+            backdrop-filter: blur(24px);
+            border-radius: 20px;
+            position: fixed;
+            top: 24px;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.4);
+        }
+
+        .navbar a {
+            color: #dbeafe;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .navbar a:hover,
+        .navbar a[style*="background:var(--cyan)"] {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.92), rgba(59, 130, 246, 0.72));
+            color: white;
+            box-shadow: 0 0 25px rgba(124, 58, 237, 0.45);
+        }
+
+        .container {
+            width: min(900px, calc(100vw - 80px));
+            position: relative;
+        }
+
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            letter-spacing: 1.4px;
+            margin-top: 20px;
+            font-size: 42px;
+            text-shadow: 0 0 18px rgba(124, 58, 237, 0.2);
+        }
+
+        p {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        #searchBar {
+            width: 100%;
+            padding: 18px 22px;
+            margin-bottom: 24px;
+            border-radius: 18px;
+            border: 1px solid rgba(124, 58, 237, 0.18);
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.52));
+            color: white;
+            outline: none;
+            box-shadow: 0 0 0 0 transparent;
+            backdrop-filter: blur(16px);
+        }
+
+        #searchBar:focus {
+            border-color: rgba(59, 130, 246, 0.65);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+        }
+
+        #customerList {
+            display: grid;
+            gap: 14px;
+        }
+
+        .customer-card {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.42));
+            border: 1px solid transparent;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(2, 6, 23, 0.2);
+        }
+
+        .customer-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.5), rgba(59, 130, 246, 0.28));
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .customer-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.2), 0 12px 40px rgba(59, 130, 246, 0.2);
+        }
+
+        .cust-info h3 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 18px;
+        }
+
+        .cust-info p {
+            margin: 6px 0 0;
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: left;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 26px rgba(59, 130, 246, 0.2);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 28px rgba(124, 58, 237, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html">Home</a>
+        <a href="companydetails.html" style="background:var(--cyan); color:black;">Clients</a>
+        <a href="billing.html">Billing</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="history.html">History</a>
+    </nav>
+
+    <div class="container">
+        <h1>CUSTOMER DIRECTORY</h1>
+        <p>Select a customer to automatically fill the billing form</p>
+        
+        <input type="text" id="searchBar" placeholder="Search by company name..." onkeyup="filterCustomers()">
+
+        <div id="customerList"></div>
+    </div>
+
+    <script>
+        const customers = [
+            { 
+                name: "QUALITY KNIT WEARS PRIVATE LIMITED", 
+                gst: "33AAACQ0990N1Z7", 
+                addr: "POLT NO.1A, BHRATHI STREET, MANAGIRI, K.K NAGAR, MADURAI - 625020" 
+            },
+            { 
+                name: "ST LASERS - BRANCH OFFICE", 
+                gst: "33AFHFS9990K1Z6", 
+                addr: "17/1A, RVE Layout, 1st Street, Thennampalayam, Tiruppur - 641604" 
+            },
+            { 
+                name: "SREE TEXTILES", 
+                gst: "33AAAAA0000A1Z1", 
+                addr: "Main Road, Tiruppur, Tamil Nadu" 
+            },
+            { 
+                name: "FASHION APPARELS", 
+                gst: "33BBBBB1111B1Z2", 
+                addr: "Industrial Estate, Madurai" 
+            },
+            { 
+                name: "GLOBAL EXPORTS", 
+                gst: "33CCCCC2222C1Z3", 
+                addr: "Export Zone, Coimbatore" 
+            },
+            { 
+                name: "DREAM KNITS", 
+                gst: "33DDDDD3333D1Z4", 
+                addr: "Avinashi Road, Tiruppur" 
+            },
+            { 
+                name: "STAR CUTTING WORKS", 
+                gst: "33EEEEE4444E1Z5", 
+                addr: "Sidco Industrial Area, Chennai" 
+            },
+            { 
+                name: "PIONEER FABRICS", 
+                gst: "33FFFFF5555F1Z6", 
+                addr: "Palladam Road, Tiruppur" 
+            },
+            { 
+                name: "VELAN GARMENTS", 
+                gst: "33GGGGG6666G1Z7", 
+                addr: "Netaji Road, Tiruppur" 
+            },
+            { 
+                name: "MODERN APPLIQUES", 
+                gst: "33HHHHH7777H1Z8", 
+                addr: "Kovil Vazhi, Tiruppur" 
+            }
+        ];
+
+        function renderCustomers(list) {
+            const container = document.getElementById("customerList");
+            container.innerHTML = "";
+            
+            list.forEach(cust => {
+                const card = document.createElement("div");
+                card.className = "customer-card";
+                card.onclick = () => selectAndBill(cust);
+                
+                card.innerHTML = `
+                    <div class="cust-info">
+                        <h3>${cust.name}</h3>
+                        <p>GSTIN: ${cust.gst}</p>
+                        <p>${cust.addr}</p>
+                    </div>
+                    <button class="action-btn">BILL NOW</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterCustomers() {
+            const term = document.getElementById("searchBar").value.toLowerCase();
+            const filtered = customers.filter(c => c.name.toLowerCase().includes(term));
+            renderCustomers(filtered);
+        }
+
+        function selectAndBill(customer) {
+            sessionStorage.setItem("selectedClient", JSON.stringify(customer));
+            window.location.href = "billing.html";
+        }
+
+        renderCustomers(customers);
+    </script>
+</body>
+</html>

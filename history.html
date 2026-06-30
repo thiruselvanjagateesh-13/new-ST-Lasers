@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Billing History | ST Lasers</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="firebase.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg: #050816;
+            --card: linear-gradient(180deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.48));
+            --accent: #8b5cf6;
+            --accent-2: #3b82f6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at top left, rgba(124, 58, 237, 0.46), transparent 26%),
+                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.28), transparent 22%),
+                #050816;
+            font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 120px;
+        }
+
+        .navbar {
+            width: min(1120px, calc(100% - 48px));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            padding: 16px 0;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.82), rgba(10, 17, 30, 0.56));
+            border: 1px solid rgba(124, 58, 237, 0.18);
+            backdrop-filter: blur(24px);
+            border-radius: 20px;
+            position: fixed;
+            top: 24px;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.42);
+        }
+
+        .navbar a {
+            color: #dbeafe;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .navbar a:hover {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.92), rgba(59, 130, 246, 0.72));
+            box-shadow: 0 0 25px rgba(124, 58, 237, 0.4);
+        }
+
+        .nav-back { position: absolute; left: 20px; font-size: 14px !important; border: 1px solid rgba(124, 58, 237, 0.25); }
+
+        h1 {
+            color: #ffffff;
+            letter-spacing: 1.6px;
+            font-size: 38px;
+            margin-bottom: 18px;
+        }
+
+        .history-card {
+            width: min(1200px, calc(100vw - 80px));
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.68), rgba(15, 23, 42, 0.46));
+            padding: 20px;
+            border-radius: 22px;
+            border: 1px solid transparent;
+            overflow-x: auto;
+            position: relative;
+            box-shadow: 0 10px 48px rgba(2, 6, 23, 0.28);
+        }
+
+        .history-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(59, 130, 246, 0.2));
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; min-width: 1000px; }
+        th {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.9), rgba(59, 130, 246, 0.7));
+            color: white;
+            padding: 14px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 14px;
+            text-align: center;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+            font-size: 13px;
+            background: rgba(15, 23, 42, 0.2);
+        }
+
+        .btn-view {
+            background: transparent;
+            border: 1px solid rgba(148, 163, 184, 0.34);
+            color: #94a3b8;
+            padding: 7px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-weight: 600;
+        }
+
+        .btn-delete {
+            background: transparent;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #fca5a5;
+            padding: 7px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-view:hover { background: rgba(148, 163, 184, 0.18); color: #ffffff; }
+        .btn-delete:hover { background: rgba(239, 68, 68, 0.82); color: white; }
+        .amt { color: #ffffff; font-weight: 700; }
+
+        #loading { color: #a78bfa; margin-bottom: 20px; display: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="javascript:history.back()" class="nav-back">← BACK</a>
+        <a href="index.html">Home</a>
+        <a href="companydetails.html">Clients</a>
+        <a href="billing.html">Billing</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="history.html">History</a>
+    </nav>
+
+    <h1 style="color:var(--cyan); letter-spacing: 2px;">BILLING RECORDS</h1>
+    <div id="loading">FETCHING CLOUD DATA...</div>
+
+    <div class="history-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Inv No</th>
+                    <th>Date</th>
+                    <th>Buyer Name</th>
+                    <th>Total (₹)</th>
+                    <th>Vehicle No</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="hTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // Firebase is initialized in firebase.js (window._firebase)
+
+        async function loadHistory() {
+            const table = document.getElementById("hTable");
+            const loading = document.getElementById("loading");
+            
+            loading.style.display = "block";
+            table.innerHTML = "";
+
+            try {
+                // Fetch invoices from Firestore
+                const invoices = await window._firebase.getInvoices();
+
+                if(!invoices || invoices.length === 0) {
+                    table.innerHTML = "<tr><td colspan='6' style='padding:40px; color:#666;'>No cloud records found.</td></tr>";
+                    return;
+                }
+
+                invoices.forEach((item) => {
+                    const row = `<tr>
+                        <td>${item.inv_no}</td>
+                        <td>${item.bill_date}</td>
+                        <td style="text-align:left; font-weight:bold;">${item.customer_name}</td>
+                        <td class="amt">₹ ${item.grand_total}</td>
+                        <td>${item.all_data.vehicle || '---'}</td>
+                        <td>
+                            <button class="btn-view" onclick="viewInvoice('${item.id}')">View</button>
+                            <button class="btn-delete" onclick="deleteInvoice('${item.id}')">Delete</button>
+                        </td>
+                    </tr>`;
+                    table.innerHTML += row;
+                });
+            } catch (err) {
+                alert("Could not load history: " + err.message);
+            } finally {
+                loading.style.display = "none";
+            }
+        }
+
+        // View single invoice by its Cloud ID
+        async function viewInvoice(id) {
+            const dataDoc = await window._firebase.getInvoiceById(id);
+            if (dataDoc) {
+                // Temporarily store in session so invoice.html can see it
+                sessionStorage.setItem("viewInvoiceData", JSON.stringify(dataDoc.all_data));
+                window.location.href = `invoice.html?source=cloud`;
+            }
+        }
+
+        async function deleteInvoice(id) {
+            if(confirm("Delete this record permanently from Cloud?")) {
+                try {
+                    await window._firebase.deleteInvoice(id);
+                    loadHistory();
+                } catch (err) {
+                    alert('Delete failed: ' + err.message);
+                }
+            }
+        }
+
+        loadHistory();
+    </script>
+</body>
+</html>

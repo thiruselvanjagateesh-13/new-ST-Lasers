@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | ST Lasers</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg: #050816;
+            --panel: linear-gradient(180deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.48));
+            --glass: rgba(15, 23, 42, 0.52);
+            --muted: #94a3b8;
+            --text: #f8fafc;
+            --primary: #8b5cf6;
+            --secondary: #3b82f6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(124, 58, 237, 0.48), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.35), transparent 24%),
+                #050816;
+            overflow-x: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            width: 380px;
+            height: 380px;
+            border-radius: 50%;
+            filter: blur(30px);
+            opacity: 0.4;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body::before {
+            top: -8%; left: -10%;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.68), transparent 65%);
+        }
+
+        body::after {
+            bottom: -8%; right: -10%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.60), transparent 65%);
+        }
+
+        .navbar {
+            width: min(1120px, calc(100% - 48px));
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            padding: 16px 0;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.85), rgba(10, 17, 30, 0.58));
+            border: 1px solid rgba(124, 58, 237, 0.18);
+            border-radius: 20px;
+            backdrop-filter: blur(24px);
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.4);
+        }
+
+        .navbar a {
+            color: #dbeafe;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .navbar a:hover {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.92), rgba(59, 130, 246, 0.72));
+            box-shadow: 0 0 24px rgba(124, 58, 237, 0.4);
+        }
+
+        .auth-wrap {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 24px 40px;
+        }
+
+        .auth-card {
+            width: min(1060px, 100%);
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.58), rgba(15, 23, 42, 0.40));
+            border-radius: 28px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid transparent;
+            box-shadow: 0 24px 70px rgba(2, 6, 23, 0.45);
+        }
+
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.6), rgba(59, 130, 246, 0.35));
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .brand-panel {
+            padding: 52px;
+            background:
+                radial-gradient(circle at top left, rgba(124, 58, 237, 0.45), transparent 26%),
+                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.28), transparent 24%),
+                linear-gradient(180deg, rgba(10, 16, 28, 0.96), rgba(18, 26, 42, 0.68));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .brand-badge {
+            width: 72px;
+            height: 72px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 22px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.95), rgba(59, 130, 246, 0.8));
+            box-shadow: 0 0 30px rgba(124, 58, 237, 0.4);
+            overflow: hidden;
+        }
+
+        .brand-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .brand-title {
+            font-size: 48px;
+            font-weight: 800;
+            margin: 28px 0 0;
+            line-height: 1.05;
+            letter-spacing: 0.4px;
+        }
+
+        .brand-subtitle {
+            margin-top: 16px;
+            font-size: 16px;
+            color: #94a3b8;
+            max-width: 320px;
+        }
+
+        .brand-features {
+            display: grid;
+            gap: 12px;
+            margin-top: 26px;
+        }
+
+        .feature-pill {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #dbeafe;
+            font-size: 14px;
+        }
+
+        .feature-pill span {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.26), rgba(59, 130, 246, 0.22));
+            border: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        .form-panel {
+            padding: 46px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-heading {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .form-subtext {
+            color: #94a3b8;
+            font-size: 14px;
+            margin: 8px 0 24px;
+        }
+
+        .input-wrap {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            background: linear-gradient(180deg, rgba(10, 17, 30, 0.55), rgba(15, 23, 42, 0.4));
+            border-radius: 16px;
+            padding: 16px 18px;
+            color: #f8fafc;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .input-wrap input:focus {
+            border-color: rgba(59, 130, 246, 0.58);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+        }
+
+        .pwd-wrap input {
+            padding-right: 52px;
+        }
+
+        .toggle-pwd {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 34px;
+            height: 34px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .row-between {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin: 8px 0 22px;
+            font-size: 13px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+        }
+
+        .remember input {
+            accent-color: #8b5cf6;
+        }
+
+        .forgot {
+            color: #93c5fd;
+            text-decoration: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 16px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            color: #ffffff;
+            box-shadow: 0 14px 32px rgba(59, 130, 246, 0.25);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 28px rgba(124, 58, 237, 0.35);
+        }
+
+        .switch-text {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .switch-text a {
+            color: #93c5fd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 900px) {
+            .auth-card { grid-template-columns: 1fr; }
+            .brand-panel { display: none; }
+            .form-panel { padding: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html">Home</a>
+        <a href="companydetails.html">Clients</a>
+        <a href="billing.html">Billing</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="history.html">History</a>
+    </nav>
+
+    <main class="auth-wrap">
+        <section class="auth-card" aria-label="Login page">
+            <div class="brand-panel">
+                <div class="brand-badge"><img src="images/image logo.png.jpeg" alt="ST Lasers logo" /></div>
+                <div class="brand-title">ST LASERS</div>
+                <div class="brand-subtitle">Manage invoices, track customers, and accelerate your billing workflow with a premium control dashboard.</div>
+                <div class="brand-features">
+                    <div class="feature-pill"><span>⚡</span> Instant invoice generation</div>
+                    <div class="feature-pill"><span>📦</span> Customer history tracking</div>
+                    <div class="feature-pill"><span>🔐</span> Secure billing operations</div>
+                </div>
+            </div>
+
+            <div class="form-panel">
+                <h1 class="form-heading">Welcome back</h1>
+                <div class="form-subtext">Sign in to continue to your billing workspace</div>
+
+                <form id="loginForm">
+                    <div class="input-wrap">
+                        <input type="email" id="email" placeholder="Email address" required />
+                    </div>
+                    <div class="input-wrap pwd-wrap">
+                        <input type="password" id="password" placeholder="Password" required />
+                        <button class="toggle-pwd" id="togglePwd" type="button" aria-label="Show password">👁️</button>
+                    </div>
+
+                    <div class="row-between">
+                        <label class="remember"><input type="checkbox" /> Remember me</label>
+                        <a class="forgot" href="#">Forgot password?</a>
+                    </div>
+
+                    <button class="submit-btn" type="submit">Login</button>
+                </form>
+
+                <div class="switch-text">
+                    Don’t have an account? <a href="register.html">Create account</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const password = document.getElementById('password');
+        const togglePwd = document.getElementById('togglePwd');
+        const loginForm = document.getElementById('loginForm');
+
+        togglePwd.addEventListener('click', () => {
+            const isHidden = password.type === 'password';
+            password.type = isHidden ? 'text' : 'password';
+            togglePwd.textContent = isHidden ? '🙈' : '👁️';
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const pass = document.getElementById('password').value;
+            const users = JSON.parse(localStorage.getItem('st_lasers_users')) || [];
+            const matchedUser = users.find(user => user.email.toLowerCase() === email && user.password === pass);
+
+            if (!matchedUser) {
+                alert('Invalid email or password. Please register first if you do not have an account.');
+                return;
+            }
+
+            localStorage.setItem('st_lasers_loggedin', 'true');
+            localStorage.setItem('st_lasers_currentUser', JSON.stringify(matchedUser));
+            window.location.href = 'dashboard.html';
+        });
+    </script>
+</body>
+</html>

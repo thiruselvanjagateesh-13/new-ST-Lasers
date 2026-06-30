@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register | ST Lasers</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg: #050816;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --primary: #8b5cf6;
+            --secondary: #3b82f6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(124, 58, 237, 0.48), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.35), transparent 24%),
+                #050816;
+            color: var(--text);
+        }
+
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            width: 360px;
+            height: 360px;
+            border-radius: 50%;
+            filter: blur(30px);
+            opacity: 0.32;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body::before {
+            top: -4%; left: -5%;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.65), transparent 66%);
+        }
+
+        body::after {
+            bottom: -10%; right: -6%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.62), transparent 66%);
+        }
+
+        .navbar {
+            width: min(1120px, calc(100% - 48px));
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            padding: 16px 0;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.85), rgba(10, 17, 30, 0.58));
+            border: 1px solid rgba(124, 58, 237, 0.18);
+            border-radius: 20px;
+            backdrop-filter: blur(24px);
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.4);
+        }
+
+        .navbar a {
+            color: #dbeafe;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .navbar a:hover {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.92), rgba(59, 130, 246, 0.72));
+            box-shadow: 0 0 24px rgba(124, 58, 237, 0.4);
+        }
+
+        .auth-wrap {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            padding: 124px 24px 40px;
+        }
+
+        .auth-card {
+            width: min(1020px, 100%);
+            display: grid;
+            grid-template-columns: 0.98fr 1.02fr;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.4));
+            border-radius: 28px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid transparent;
+            box-shadow: 0 24px 70px rgba(2, 6, 23, 0.42);
+        }
+
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.58), rgba(59, 130, 246, 0.35));
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .brand-panel {
+            padding: 54px;
+            background:
+                radial-gradient(circle at top left, rgba(124, 58, 237, 0.45), transparent 26%),
+                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.28), transparent 24%),
+                linear-gradient(180deg, rgba(10, 16, 28, 0.96), rgba(18, 26, 42, 0.68));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand-badge {
+            width: 72px;
+            height: 72px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 22px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.95), rgba(59, 130, 246, 0.8));
+            box-shadow: 0 0 30px rgba(124, 58, 237, 0.4);
+            overflow: hidden;
+        }
+
+        .brand-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .brand-title {
+            font-size: 48px;
+            font-weight: 800;
+            margin: 28px 0 0;
+            line-height: 1.05;
+        }
+
+        .brand-subtitle {
+            margin-top: 16px;
+            font-size: 16px;
+            color: #94a3b8;
+            max-width: 360px;
+        }
+
+        .mini-card {
+            margin-top: 28px;
+            padding: 18px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.58), rgba(15, 23, 42, 0.32));
+            border: 1px solid rgba(124, 58, 237, 0.22);
+        }
+
+        .mini-card .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+        }
+
+        .mini-card .number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .form-panel {
+            padding: 42px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-heading {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .form-subtext {
+            color: #94a3b8;
+            font-size: 14px;
+            margin: 8px 0 22px;
+        }
+
+        .input-wrap {
+            position: relative;
+            margin-bottom: 14px;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            background: linear-gradient(180deg, rgba(10, 17, 30, 0.56), rgba(15, 23, 42, 0.4));
+            border-radius: 16px;
+            padding: 16px 18px;
+            color: #f8fafc;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .input-wrap input:focus {
+            border-color: rgba(59, 130, 246, 0.58);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+        }
+
+        .pwd-wrap input {
+            padding-right: 52px;
+        }
+
+        .toggle-pwd {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 34px;
+            height: 34px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .strength {
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            transition: width 0.3s ease;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 16px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            color: #ffffff;
+            box-shadow: 0 14px 32px rgba(59, 130, 246, 0.23);
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 28px rgba(124, 58, 237, 0.35);
+        }
+
+        .switch-text {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .switch-text a {
+            color: #93c5fd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 900px) {
+            .auth-card { grid-template-columns: 1fr; }
+            .brand-panel { display: none; }
+            .form-panel { padding: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html">Home</a>
+        <a href="companydetails.html">Clients</a>
+        <a href="billing.html">Billing</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="history.html">History</a>
+    </nav>
+
+    <main class="auth-wrap">
+        <section class="auth-card" aria-label="Register page">
+            <div class="brand-panel">
+                <div class="brand-badge"><img src="images/image logo.png.jpeg" alt="ST Lasers logo" /></div>
+                <div class="brand-title">Create Account</div>
+                <div class="brand-subtitle">Start using ST LASERS with secure billing access, customer insights, and live invoice workflows.</div>
+                <div class="mini-card">
+                    <div class="top"><span>New Team</span><span>Ready</span></div>
+                    <div class="number">+24%</div>
+                </div>
+            </div>
+
+            <div class="form-panel">
+                <h1 class="form-heading">Register</h1>
+                <div class="form-subtext">Create your workspace account in seconds</div>
+
+                <form id="registerForm">
+                    <div class="input-wrap"><input type="text" id="fullName" placeholder="Full name" required /></div>
+                    <div class="input-wrap"><input type="text" id="companyName" placeholder="Company name" required /></div>
+                    <div class="input-wrap"><input type="email" id="email" placeholder="Email address" required /></div>
+                    <div class="input-wrap"><input type="tel" id="phone" placeholder="Phone number" required /></div>
+                    <div class="input-wrap pwd-wrap"><input type="password" id="password" placeholder="Password" required /><button class="toggle-pwd" id="togglePwd" type="button" aria-label="Show password">👁️</button></div>
+                    <div class="strength"><div class="strength-bar" id="strengthBar"></div></div>
+                    <div class="input-wrap pwd-wrap"><input type="password" id="confirmPassword" placeholder="Confirm password" required /></div>
+                    <button class="submit-btn" type="submit">Create account</button>
+                </form>
+
+                <div class="switch-text">Already have an account? <a href="login.html">Login</a></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const strengthBar = document.getElementById('strengthBar');
+        const togglePwd = document.getElementById('togglePwd');
+        const registerForm = document.getElementById('registerForm');
+
+        function updateStrength() {
+            const value = password.value;
+            let strength = 0;
+            if (value.length >= 8) strength += 35;
+            if (/[A-Z]/.test(value)) strength += 25;
+            if (/[0-9]/.test(value)) strength += 20;
+            if (/[^A-Za-z0-9]/.test(value)) strength += 20;
+            strengthBar.style.width = Math.min(strength, 100) + '%';
+        }
+
+        password.addEventListener('input', updateStrength);
+
+        togglePwd.addEventListener('click', () => {
+            const isHidden = password.type === 'password';
+            password.type = isHidden ? 'text' : 'password';
+            confirmPassword.type = isHidden ? 'text' : 'password';
+            togglePwd.textContent = isHidden ? '🙈' : '👁️';
+        });
+
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (password.value !== confirmPassword.value) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('st_lasers_users')) || [];
+            const email = document.getElementById('email').value.trim().toLowerCase();
+
+            if (users.some(user => user.email.toLowerCase() === email)) {
+                alert('This email is already registered. Please login instead.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            users.push({
+                fullName: document.getElementById('fullName').value.trim(),
+                companyName: document.getElementById('companyName').value.trim(),
+                email: email,
+                phone: document.getElementById('phone').value.trim(),
+                password: password.value
+            });
+
+            localStorage.setItem('st_lasers_users', JSON.stringify(users));
+            alert('Registration successful! Please login to continue.');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>
