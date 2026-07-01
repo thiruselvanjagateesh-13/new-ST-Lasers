@@ -94,6 +94,11 @@
     </style>
 </head>
 <body>
+    <script>
+        if (localStorage.getItem('st_lasers_loggedin') !== 'true') {
+            window.location.replace('login.html');
+        }
+    </script>
 
 <div class="controls">
     <a href="javascript:history.back()" class="btn btn-back">← BACK</a>

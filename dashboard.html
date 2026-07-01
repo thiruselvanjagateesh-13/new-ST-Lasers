@@ -2,30 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | ST Lasers</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
         :root {
             --bg: #050816;
-            --card: linear-gradient(180deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.48));
+            --panel: linear-gradient(180deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.48));
             --accent: #8b5cf6;
             --accent-2: #3b82f6;
-            --red: #ef4444;
+            --text: #f8fafc;
+            --muted: #94a3b8;
         }
 
         * { box-sizing: border-box; }
 
         body {
             margin: 0;
+            min-height: 100vh;
             background:
-                radial-gradient(circle at top left, rgba(124, 58, 237, 0.45), transparent 24%),
+                radial-gradient(circle at top left, rgba(124, 58, 237, 0.46), transparent 26%),
                 radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.28), transparent 22%),
                 #050816;
             font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
             color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding-top: 120px;
-            min-height: 100vh;
         }
 
         .navbar {
@@ -34,7 +39,7 @@
             justify-content: center;
             gap: 18px;
             padding: 16px 0;
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.82), rgba(10, 17, 30, 0.56));
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(10, 17, 30, 0.56));
             border: 1px solid rgba(124, 58, 237, 0.18);
             backdrop-filter: blur(24px);
             border-radius: 20px;
@@ -42,8 +47,6 @@
             top: 24px;
             z-index: 1000;
             box-shadow: 0 10px 30px rgba(15, 23, 42, 0.42);
-            left: 50%;
-            transform: translateX(-50%);
         }
 
         .navbar a {
@@ -56,203 +59,112 @@
             font-size: 14px;
         }
 
-        .navbar a:hover {
+        .navbar a:hover,
+        .navbar a[style*="background:var(--accent)"] {
             background: linear-gradient(135deg, rgba(124, 58, 237, 0.92), rgba(59, 130, 246, 0.72));
-            box-shadow: 0 0 25px rgba(124, 58, 237, 0.4);
+            box-shadow: 0 0 25px rgba(124, 58, 237, 0.45);
         }
 
-        .nav-back { position: absolute; left: 20px; font-size: 14px !important; border: 1px solid rgba(124, 58, 237, 0.25); }
+        .page {
+            width: min(1080px, calc(100vw - 80px));
+        }
 
-        h1 {
-            text-align: center;
-            color: #ffffff;
-            letter-spacing: 1.4px;
+        .welcome {
             font-size: 42px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 14px rgba(124, 58, 237, 0.20);
+            font-weight: 800;
+            margin: 0;
+            text-align: center;
+            letter-spacing: 1.6px;
         }
 
-        .cards {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 28px auto;
-            flex-wrap: wrap;
-            max-width: 1100px;
+        .subtitle {
+            text-align: center;
+            color: var(--muted);
+            font-size: 16px;
+            margin: 14px 0 28px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
         }
 
         .card {
-            width: 250px;
+            background: var(--panel);
             padding: 24px;
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.46));
-            border-radius: 22px;
-            text-align: center;
-            border: 1px solid transparent;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 36px rgba(2, 6, 23, 0.28);
+            border-radius: 24px;
+            border: 1px solid rgba(124, 58, 237, 0.18);
+            box-shadow: 0 12px 40px rgba(2, 6, 23, 0.16);
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            padding: 1px;
-            border-radius: 22px;
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.48), rgba(59, 130, 246, 0.28));
-            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-            -webkit-mask-composite: xor;
-            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-            mask-composite: exclude;
-            pointer-events: none;
+        .card h3 {
+            margin: 0;
+            font-size: 20px;
         }
 
-        .card h2 { color: #ffffff; margin: 12px 0 6px; font-size: 30px; }
-        .card p { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.18em; }
-
-        .section {
-            max-width: 900px;
-            margin: 20px auto;
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.68), rgba(15, 23, 42, 0.46));
-            padding: 24px;
-            border-radius: 22px;
-            border: 1px solid transparent;
-            position: relative;
-            box-shadow: 0 12px 32px rgba(2, 6, 23, 0.28);
+        .card p {
+            color: var(--muted);
+            margin: 8px 0 18px;
+            font-size: 14px;
         }
 
-        .section::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            padding: 1px;
-            border-radius: 22px;
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.36), rgba(59, 130, 246, 0.18));
-            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-        }
-
-        .item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.13);
-        }
-
-        .item-info { flex: 1; }
-        .item-name { font-weight: 700; display: block; color: #ffffff; }
-        .item-meta { font-size: 12px; color: #94a3b8; }
-        .item-amt { color: #ffffff; font-weight: 700; width: 120px; text-align: right; margin-right: 20px; }
-
-        .btn-view, .btn-edit, .btn-delete {
-            background: none;
-            padding: 7px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 11px;
+        .card a {
+            display: inline-block;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            color: white;
             font-weight: 700;
-            margin-left: 5px;
-            transition: all 0.25s ease;
         }
 
-        .btn-view { border: 1px solid rgba(148, 163, 184, 0.3); color: #94a3b8; }
-        .btn-edit { border: 1px solid rgba(124, 58, 237, 0.5); color: #a78bfa; }
-        .btn-delete { border: 1px solid rgba(239, 68, 68, 0.45); color: #fca5a5; }
-
-        .btn-view:hover { background: rgba(148, 163, 184, 0.18); color: #ffffff; }
-        .btn-edit:hover { background: linear-gradient(135deg, rgba(124, 58, 237, 0.9), rgba(59, 130, 246, 0.7)); color: white; }
-        .btn-delete:hover { background: rgba(239, 68, 68, 0.82); color: white; }
+        @media (max-width: 700px) {
+            .grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
+    <script>
+        if (localStorage.getItem('st_lasers_loggedin') !== 'true') {
+            window.location.replace('login.html');
+        }
+    </script>
 
     <nav class="navbar">
-        <a href="javascript:history.back()" class="nav-back">← BACK</a>
         <a href="index.html">Home</a>
         <a href="companydetails.html">Clients</a>
         <a href="billing.html">Billing</a>
-        <a href="dashboard.html">Dashboard</a>
+        <a href="dashboard.html" style="background:var(--accent); color:black;">Dashboard</a>
         <a href="history.html">History</a>
     </nav>
 
-    <h1 style="text-align:center; color:var(--cyan);">ST LASERS DASHBOARD</h1>
+    <div class="page">
+        <h1 class="welcome">DASHBOARD</h1>
+        <div class="subtitle">Manage your billing workspace from one place.</div>
 
-    <div class="cards">
-        <div class="card"><h2 id="count">0</h2><p>Total Invoices</p></div>
-        <div class="card"><h2>₹ <span id="rev">0</span></h2><p>Total Revenue</p></div>
-        <div class="card"><h2>₹ <span id="tax">0</span></h2><p>GST Collected</p></div>
+        <div class="grid">
+            <div class="card">
+                <h3>Clients</h3>
+                <p>View and manage customer details for billing operations.</p>
+                <a href="companydetails.html">Open Clients</a>
+            </div>
+            <div class="card">
+                <h3>Billing</h3>
+                <p>Create invoices and save them securely to the cloud.</p>
+                <a href="billing.html">Open Billing</a>
+            </div>
+            <div class="card">
+                <h3>History</h3>
+                <p>Review saved billing records and download invoice details.</p>
+                <a href="history.html">Open History</a>
+            </div>
+            <div class="card">
+                <h3>Logout</h3>
+                <p>End your current session and return to the login page.</p>
+                <a href="login.html" onclick="localStorage.removeItem('st_lasers_loggedin'); localStorage.removeItem('st_lasers_currentUser');">Logout</a>
+            </div>
+        </div>
     </div>
-
-    <div class="section">
-        <h3 style="color:var(--cyan); margin-top:0;">Recent Activity</h3>
-        <div id="recentList"></div>
-    </div>
-
-    <script>
-        if (localStorage.getItem("st_lasers_loggedin") !== "true") {
-            window.location.href = "login.html";
-        }
-
-        function renderDashboard() {
-            const data = JSON.parse(localStorage.getItem("st_lasers_data")) || [];
-            let totalRev = 0, totalTax = 0;
-
-            data.forEach(bill => {
-                totalRev += parseFloat(bill.grandTotal) || 0;
-                totalTax += (parseFloat(bill.cgst) || 0) + (parseFloat(bill.sgst) || 0);
-            });
-
-            document.getElementById("count").innerText = data.length;
-            document.getElementById("rev").innerText = totalRev.toLocaleString('en-IN');
-            document.getElementById("tax").innerText = totalTax.toLocaleString('en-IN');
-
-            const list = document.getElementById("recentList");
-            list.innerHTML = "";
-            
-            // Show last 5
-            const recent = [...data].reverse().slice(0, 5);
-            recent.forEach((bill, i) => {
-                const originalIndex = data.length - 1 - i;
-                const div = document.createElement("div");
-                div.className = "item";
-                div.innerHTML = `
-                    <div class="item-info">
-                        <span class="item-name">${bill.customer}</span>
-                        <span class="item-meta">Inv: ${bill.invNo} | ${bill.date}</span>
-                    </div>
-                    <div class="item-amt">₹ ${bill.grandTotal}</div>
-                    <div>
-                        <button class="btn-view" onclick="viewInv(${originalIndex})">View</button>
-                        <button class="btn-edit" onclick="editInv(${originalIndex})">Edit</button>
-                        <button class="btn-delete" onclick="deleteInv(${originalIndex})">Delete</button>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function viewInv(index) { window.location.href = `invoice.html?index=${index}`; }
-        
-        function editInv(index) {
-            let data = JSON.parse(localStorage.getItem("st_lasers_data")) || [];
-            sessionStorage.setItem("editInvoiceData", JSON.stringify(data[index]));
-            sessionStorage.setItem("editIndex", index);
-            window.location.href = "billing.html";
-        }
-
-        function deleteInv(index) {
-            if(confirm("Delete record?")) {
-                let data = JSON.parse(localStorage.getItem("st_lasers_data")) || [];
-                data.splice(index, 1);
-                localStorage.setItem("st_lasers_data", JSON.stringify(data));
-                renderDashboard();
-            }
-        }
-
-        renderDashboard();
-    </script>
 </body>
 </html>

@@ -370,6 +370,10 @@
         const togglePwd = document.getElementById('togglePwd');
         const loginForm = document.getElementById('loginForm');
 
+        if (localStorage.getItem('st_lasers_loggedin') === 'true') {
+            window.location.replace('dashboard.html');
+        }
+
         togglePwd.addEventListener('click', () => {
             const isHidden = password.type === 'password';
             password.type = isHidden ? 'text' : 'password';
